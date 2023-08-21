@@ -36,6 +36,7 @@ require(stargazer)     # for table of results
 ## RESPONSE VARIABLE
 
 # Create column of bat passes, bat feeding buzzes and bat activity
+require(dplyr)
 bat_data <- read.csv("bat_data.csv", header=TRUE)
 bat_data <- mutate(bat_data, bat_passes = bat_data$com_pip_passes + 
                      bat_data$sop_pip_passes + bat_data$nat_pip_passes +
@@ -92,7 +93,7 @@ empirical_data <- merge(empirical_data, lux_data, 'Sample_point', 'Sample_point'
 # 2/ LANDSCAPE DATA
 landscape_data <- read.csv("sample_points_landscape_data.csv", header=TRUE)
 # select columns 
-landscape_data <- select(landscape_data, -Date, -Site, -Surveyor, -Tree_ID, -Long, -Lat, -Accuracy, -Comments)
+landscape_data <- dplyr::select(landscape_data, -Date, -Site, -Surveyor, -Tree_ID, -Long, -Lat, -Accuracy, -Comments)
 # merge with dataset
 empirical_data <- merge(empirical_data, landscape_data, 'Sample_point', 'Sample_point', all.x=TRUE)
 
@@ -112,7 +113,7 @@ for(i in unique(tree_density_data$Sample_point)) {
 # calculate density at sample point of trees per hectare
 results <- mutate (results, tree_density = 10000*(1/(results$mean_distance)^2))
 # select wanted columns
-tree_density_results <- select(results, -mean_distance)
+tree_density_results <- dplyr::select(results, -mean_distance)
 # merge with dataset
 empirical_data <- merge(empirical_data, tree_density_results, 'Sample_point', 'Sample_point', all.x=TRUE)
 
@@ -140,7 +141,7 @@ empirical_data <- mutate(empirical_data, canopy_cover = 1-empirical_data$mean_ga
 ## 5/ INVERTEBRATE COUNT DATA
 invert_data <- read.csv("invertebrate_data.csv", header=TRUE)
 # select wanted columns
-invert_data <- select(invert_data, Sample_point, Invert_count)
+invert_data <- dplyr::select(invert_data, Sample_point, Invert_count)
 # merge with dataset
 empirical_data <- merge(empirical_data, invert_data, 'Sample_point', 'Sample_point', all.x=TRUE)
 
@@ -149,9 +150,9 @@ environ_data <- read.csv("daily_environmental_data.csv", header=TRUE)
 # filter rows for dates required
 environ_data <- filter(environ_data, Date == "02/05/2023" | Date == "05/05/2023" |Date == "06/05/2023"  |Date == "07/05/2023"  )
 # select columns for night data
-environ_data <- select(environ_data, -contains("day"), -Comment)
+environ_data <- dplyr::select(environ_data, -contains("day"), -Comment)
 # merge with dataset
-site_data <- select(bat_data, Site, Sample_point)
+site_data <- dplyr::select(bat_data, Site, Sample_point)
 site_data <- site_data[!duplicated(site_data), ] 
 empirical_data <- merge(empirical_data, site_data, 'Sample_point', 'Sample_point', all.x=TRUE)
 empirical_data <- merge(empirical_data, environ_data, by.x=c('Site', 'Start_date'), 
@@ -246,10 +247,12 @@ sum(emp_data$noid_pip_fb)
 ## Explore collinearity in continuous explanatory variables
 ## Using pairs panels
 # test: lux, amp, temperature, tree density, canopy cover, invert count
+require(psych)
 pairs.panels(emp_data[,c(19, 46, 41, 20, 34, 35)])
 # all <=0.55
 
-## Repeat using VIF 
+## Repeat using VIF
+require(usdm)
 vif(emp_data[,c(19, 46, 41, 20, 34, 35)])
 # all below 2
 
@@ -275,41 +278,123 @@ summary(M1)
 # check the fit
 sum(cooks.distance(M1)>1)
 sum(cooks.distance(M1)>1)/length(emp_data$total_bat_passes)
-# 8 outliers, 6% of the observations
+# 14 outliers, 8% of the observations
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-4502.2/126
-# The model is highly over-dispersed - 36x higher conditional variance to 
+7084.9/171
+# The model is highly over-dispersed - 41x higher conditional variance to 
 # conditional mean. 
 # Possible reasons: the outliers, missing covariates / interactions (with canopy cover)
 # zero-inflation: only two zeros in 134 observations
 
 ## Alternative - use neg binomial distribution of errors
+require(MASS)
 M2 <- glm.nb(total_bat_passes~scale(lux) + scale(amp) + 
                scale(lux)*scale(amp) +
                scale(Distance_from_water_body) + scale(canopy_cover) + scale(Invert_count) + 
                scale(Mean_temp_night), 
              data = emp_data)
 summary(M2)
-# pseudoR2 = 1 - (residual dev / null dev) - 30% of the variance in bat passes can be explained 
-1-(149.45/210.36)
+# pseudoR2 = 1 - (residual dev / null dev) - 28% of the variance in bat passes can be explained 
+1-(199.73/278.02)
 
 sum(cooks.distance(M2)>1)
 # no outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-149.45/126
-# The model is only very slightly overdispersed, 1.19x higher conditional variance to 
+199.73/171
+# The model is only very slightly overdispersed, 1.17x higher conditional variance to 
 # conditional mean
 
 # Use DHARMa package to test performance
 require(DHARMa)
 testResiduals(M2)
+par(mfrow=c(2,2))
 testDispersion(M2)
 testQuantiles(M2)
 testUniformity(M2)
 testZeroInflation(M2)
 # no dispersion issues, residuals in quantile deviations ok - model looks ok
 
-## Run stripping out species as random effect, need to pivot longer the dataframe - see below.
+## Run stripping out species as random effect, need to pivot longer the dataframe
+### Adapting dataset for long data for by species glmm for total passes
+# Create column of bat passes, bat feeding buzzes and bat activity
+bat_data <- read.csv("bat_data.csv", header=TRUE)
+bat_data <- mutate(bat_data, bat_passes = bat_data$com_pip_passes + 
+                     bat_data$sop_pip_passes + bat_data$nat_pip_passes +
+                     bat_data$noid_pip_passes + bat_data$nls_passes +
+                     bat_data$myotis_passes + bat_data$unknown_passes) 
+bat_data <- mutate(bat_data, bat_fb = bat_data$com_pip_fb + bat_data$sop_pip_fb +
+                     bat_data$noid_pip_fb)
+bat_data <- mutate(bat_data, bat_activity = if_else(bat_data$bat_passes==0,0,1))
+
+# sum the passes by species by sample point and date
+sum_data <- bat_data %>% 
+  group_by(Sample_point, Start_date, .add = TRUE) %>%
+  dplyr::select(com_pip_passes, sop_pip_passes, nat_pip_passes, noid_pip_passes, myotis_passes, nls_passes, 
+                unknown_passes) %>% 
+  dplyr::summarize_all(sum)
+sum_data
+sum_data <- as.data.frame(sum_data)
+
+
+# extract number of minutes recorded per night
+# minutes of data
+results <- data.frame(Sample_point=character(), Start_date=character(), mins_rec=numeric())
+results
+for(z in unique(bat_data$Sample_point)){
+  for(i in unique(bat_data$Start_date)) {
+    temp_file <- bat_data %>% subset(bat_data$Start_date==i & bat_data$Sample_point==z)
+    count <- length(unique(temp_file$Time))
+    temp <- data.frame(Start_date=i, mins_rec=count, Sample_point=z)
+    results <- rbind(results, temp)
+  }
+}
+
+sum_data <- merge(sum_data, results, by.x=c('Sample_point', 'Start_date'), 
+                  by.y=c('Sample_point', 'Start_date'))
+
+sum_data_long <- filter(sum_data, mins_rec == 102)
+sum_data_long <- dplyr::select(sum_data_long, -mins_rec)
+require(tidyr)
+sum_data_long <- pivot_longer(sum_data_long, names_to = "Species", values_to = "Passes", cols = 3:9)
+
+# Add in explanatory variables from earlier
+sum_data_long <- merge(sum_data_long, lux_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+sum_data_long <- merge(sum_data_long, landscape_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+sum_data_long <- merge(sum_data_long, tree_density_results, 'Sample_point', 'Sample_point', all.x=TRUE)
+sum_data_long <- merge(sum_data_long, gap_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+# convert to canopy cover
+sum_data_long <- mutate(sum_data_long, canopy_cover = 1-sum_data_long$mean_gap)
+sum_data_long <- merge(sum_data_long, invert_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+sum_data_long <- merge(sum_data_long, site_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+sum_data_long <- merge(sum_data_long, environ_data, by.x=c('Site', 'Start_date'), 
+                       by.y=c('Site', 'Date'))
+sum_data_long <- merge(sum_data_long, sound_data, 'Sample_point', 'Sample_point', all.x=TRUE)
+
+# create factors
+str(sum_data_long)
+sum_data_long$Sample_point <- as.factor(sum_data_long$Sample_point)
+sum_data_long$Site <- as.factor(sum_data_long$Site)
+sum_data_long$Start_date <- as.factor(sum_data_long$Start_date)
+sum_data_long$Species <- as.factor(sum_data_long$Species)
+class(sum_data_long$Species)
+
+require(lme4)
+M1glmm <- glmer.nb(Passes~scale(lux) + scale(amp) + 
+                     scale(lux)*scale(amp) +
+                     scale(Distance_from_water_body) + scale(canopy_cover) + scale(Invert_count) + 
+                     scale(Mean_temp_night)+ 
+                     (1|Species), 
+                   data = sum_data_long)
+summary(M1glmm)
+require(performance)
+model_performance(M1glmm)
+# 0.78 R2 conditional 
+
+# check fit of model
+testDispersion(M1glmm)
+testQuantiles(M1glmm)
+testUniformity(M1glmm)
+testZeroInflation(M1glmm)
 
 
 
@@ -325,14 +410,14 @@ summary(M1cp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(2942.4/3656.0)
-# 19.5% of the variance in com pip passes can be explained 
+1-(4585.3/5642.3)
+# 19% of the variance in com pip passes can be explained 
 sum(cooks.distance(M1cp)>1)
 sum(cooks.distance(M1cp)>1)/length(emp_data$com_pip_passes)
-# 5 outliers (4% of data)
+# 8 outliers (4.5% of data)
 # Check for over-dispersion: Dispersion parameter = resid dev / DF for resid dev 
-2942.4/126
-# The model is highly over-dispersed - 23x higher conditional variance to 
+4585.3/171
+# The model is highly over-dispersed - 27x higher conditional variance to 
 # conditional mean. 
 
 ## Try negative binomial distrib of errors
@@ -345,14 +430,14 @@ summary(M2cp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev) # 30% of the variance in bat passes can be explained 
-1-(151.99/195.66)
+1-(204.74/261.33)
 # 22% of the variance in common pip passes can be explained 
 sum(cooks.distance(M2cp)>1)
 sum(cooks.distance(M2cp)>1)/length(emp_data$com_pip_passes)
 #  no outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-151.99/126
-# The model is slightly over-dispersed - 1.21x higher conditional variance to 
+204.74/171
+# The model is slightly over-dispersed - 1.2x higher conditional variance to 
 # conditional mean. 
 
 # Use DHARMa package to test performance
@@ -378,15 +463,15 @@ summary(M1sp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(2782.6/3810.6)
-# 27% of the variance in sop pip passes can be explained
+1-(4239.4/5759.7)
+# 26% of the variance in sop pip passes can be explained
 
 sum(cooks.distance(M1sp)>1)
 sum(cooks.distance(M1sp)>1)/length(emp_data$sop_pip_passes)
-# nine outliers (7% of data)
+# 7 outliers (4% of data)
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-2782.6/126
-# The model is highly over-dispersed - 22x higher conditional variance to 
+4239.4/171
+# The model is highly over-dispersed - 25x higher conditional variance to 
 # conditional mean. 
 
 
@@ -400,13 +485,13 @@ summary(M2sp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev) # 30% of the variance in bat passes can be explained 
-1-(154.91/204.54)
+1-(208.04/273.59)
 # 24% of the variance in sop pip passes can be explained
 sum(cooks.distance(M2sp)>1)
 #  no outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-154.91/126
-# The model is slightly over-dispersed - 1.23x higher conditional variance to 
+208.04/171
+# The model is slightly over-dispersed - 1.2x higher conditional variance to 
 # conditional mean. 
 
 # Use DHARMa package to test performance
@@ -415,7 +500,7 @@ testDispersion(M2sp)
 testQuantiles(M2sp)
 testUniformity(M2sp)
 testZeroInflation(M2sp)
-# model looks ok
+# some variance in residual vs predicted quantiles, but model looks ok
 
 
 
@@ -431,14 +516,14 @@ summary(M1myot)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(475.6/549.43)
-# 13% of the variance in myotis passes can be explained 
+1-(567.36/745.81)
+# 24% of the variance in myotis passes can be explained 
 sum(cooks.distance(M1myot)>1)
 sum(cooks.distance(M1myot)>1)/length(emp_data$myotis_passes)
 # no outliers 
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-475.64/126
-# The model is over-dispersed - 3.8x higher conditional variance to conditional mean. 
+567.36/171
+# The model is over-dispersed - 3.3x higher conditional variance to conditional mean. 
 
 
 ## Try negative binomial distrib of errors
@@ -452,14 +537,14 @@ summary(M2myot)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev) # 30% of the variance in bat passes can be explained 
-1-(96.286/112.698)
-# only 15% of the variance in myotis passes can be explained 
+1-(138.24/184.35)
+# 25% of the variance in myotis passes can be explained 
 sum(cooks.distance(M2myot)>1)
 sum(cooks.distance(M2myot)>1)/length(emp_data$myotis_passes)
 # no outliers 
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-92.286/126
-# The model is under-dispersed - 0.71x lower conditional variance to conditional mean. 
+138.24/171
+# The model is under-dispersed - 0.81x lower conditional variance to conditional mean. 
 
 # Use DHARMa package to test performance
 testResiduals(M2myot)
@@ -469,16 +554,6 @@ testUniformity(M2myot)
 testZeroInflation(M2myot)
 # model looks ok
 
-exp(coef(M2myot))
-exp(confint(M2myot))
-
-
-
-# repeat without the control variables
-M3myot <- glm.nb(myotis_passes~scale(lux) + scale(amp) + 
-                   scale(lux)*scale(amp), 
-                 data = emp_data)
-summary(M3myot)
 
 
 ### REPEAT FOR Nyctalus and serotine grouping
@@ -492,14 +567,14 @@ summary(M1nls)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(251.24/278.3)
-# only 9% of the variance in nls passes can be explained 
+1-(326.03/356.62)
+# only 8.5% of the variance in nls passes can be explained 
 sum(cooks.distance(M1nls)>1)
 sum(cooks.distance(M1nls)>1)/length(emp_data$nls_passes)
 # one outlier
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-251.24/126
-# The model is over-dispersed - 2x higher conditional variance to conditional mean. 
+326.03/171
+# The model is over-dispersed - 1.9x higher conditional variance to conditional mean. 
 
 
 ## Try negative binomial distrib of errors
@@ -510,13 +585,13 @@ M2nls <- glm.nb(nls_passes~scale(lux) + scale(amp) +
                 data = emp_data)
 summary(M2nls)
 # pseudoR2 = 1 - (residual dev / null dev) only 9% of the variance in nls passes can be explained 
-1-(95.302/107.671)
+1-(156.74/171.62)
 sum(cooks.distance(M2nls)>1)
 sum(cooks.distance(M2nls)>1)/length(emp_data$nls_passes)
 # one outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-95.302/126
-# The model is under-dispersed - 0.76x lower conditional variance to conditional mean. 
+156.74/171
+# The model is slightly under-dispersed - 0.92x lower conditional variance to conditional mean. 
 
 
 
@@ -533,14 +608,14 @@ summary(M1fb)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(576.1/1179.5)
-# 51% of the variance in bat feeding rate can be explained
+1-(616.76/1497.57)
+# 59% of the variance in bat feeding rate can be explained
 sum(cooks.distance(M1fb)>1)
 sum(cooks.distance(M1fb)>1)/length(emp_data$total_bat_fb)
-# three outliers
+# two outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-576.1/126
-# The model is over-dispersed - 4.6x higher conditional variance to conditional mean. 
+616.76/171
+# The model is over-dispersed - 3.6x higher conditional variance to conditional mean. 
 
 ## Try using negative binomial to deal with overdispersion
 M2fb <- glm.nb(total_bat_fb ~scale(lux) + scale(amp) + 
@@ -550,16 +625,14 @@ M2fb <- glm.nb(total_bat_fb ~scale(lux) + scale(amp) +
                data = emp_data)
 summary(M2fb)
 
-exp(coef(M2fb))
-exp(confint(M2fb))
-
-# pseudoR2 = 1 - (residual dev / null dev) 30% of the variance in bat feeding rate can be explained
-1-(118.2/167.85)
+# pseudoR2 = 1 - (residual dev / null dev) 28% of the variance in bat feeding rate can be explained
+1-(162.17/225.92)
 sum(cooks.distance(M2fb)>1)
 sum(cooks.distance(M2fb)>1)/length(emp_data$total_bat_fb)
 # no outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-118.21/126
+162.17/171
+# The model is slightly under-dispersed - 0.95x lower conditional variance to conditional mean. 
 
 # Use DHARMa package to test performance
 testResiduals(M2fb)
@@ -567,13 +640,7 @@ testDispersion(M2fb)
 testQuantiles(M2fb)
 testUniformity(M2fb)
 testZeroInflation(M2fb)
-# predicted v observed residuals not great 
-# otherwise model ok, no dispersion or zero-inflation errors
-
-
-## plot interaction   
-plot(ggpredict(M2fb, terms = c("lux", "amp"), ci = FALSE))
-plot(ggpredict(M2fb, terms = c("amp", "lux"), ci = FALSE))
+# predicted v observed residuals show significant deviations, but no dispersion or zero-inflation errors
 
 
 ## Repeat for common pip
@@ -588,14 +655,14 @@ summary(M1fbcp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(474.48/789.43)
-# 40% of the variance in bat feeding rate can be explained
+1-(358.48/855.48)
+# 58% of the variance in bat feeding rate can be explained
 sum(cooks.distance(M1fbcp)>1)
 sum(cooks.distance(M1fbcp)>1)/length(emp_data$com_pip_fb)
-# five outliers
+# two outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-474.48/126
-# The model is over-dispersed - 3.8x higher conditional variance to conditional mean. 
+358.48/171
+# The model is over-dispersed - 2.1x higher conditional variance to conditional mean. 
 
 ## Try using negative binomial to deal with overdispersion
 M2fbcp <- glm.nb(com_pip_fb ~scale(lux) + scale(amp) + 
@@ -606,14 +673,14 @@ M2fbcp <- glm.nb(com_pip_fb ~scale(lux) + scale(amp) +
 summary(M2fbcp)
 
 ### check the fit
-# pseudoR2 = 1 - (residual dev / null dev) 21% of the variance in com pip feeding rate can be explained
-1-(93.057/117.864)
+# pseudoR2 = 1 - (residual dev / null dev) 27% of the variance in com pip feeding rate can be explained
+1-(131.01/180.23)
 sum(cooks.distance(M2fbcp)>1)
 sum(cooks.distance(M2fbcp)>1)/length(emp_data$com_pip_fb)
 # no outliers
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-93.057/126
-# The model is under-dispersed - 0.74x lower conditional variance to conditional mean. 
+131.01/171
+# The model is under-dispersed - 0.77x lower conditional variance to conditional mean. 
 
 # Use DHARMa package to test performance
 testResiduals(M2fbcp)
@@ -621,7 +688,7 @@ testDispersion(M2fbcp)
 testQuantiles(M2fbcp)
 testUniformity(M2fbcp)
 testZeroInflation(M2fbcp)
-# model looks ok
+# model looks ok, no significant issues detected
 
 
 
@@ -636,14 +703,14 @@ summary(M1fbsp)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(434.18/890.79)
-# 51% of the variance in bat feeding rate can be explained
+1-(436.2/868.67)
+# 49.7% of the variance in soprano pip feeding rate can be explained
 sum(cooks.distance(M1fbsp)>1)
 sum(cooks.distance(M1fbsp)>1)/length(emp_data$sop_pip_fb)
-# two outliers
+# one outlier
 # Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-434.18/126
-# The model is over-dispersed - 3.4x higher conditional variance to conditional mean. 
+436.2/171
+# The model is over-dispersed - 2.6x higher conditional variance to conditional mean. 
 
 ## Try using negative binomial to deal with overdispersion
 M2fbsp <- glm.nb(sop_pip_fb ~scale(lux) + scale(amp) + 
@@ -678,14 +745,6 @@ exp(1.7614*2-.3884*2)/exp(1.7614-.3884)
 
 
 
-
-### try without control variables
-M3fbsp <- glm.nb(sop_pip_fb ~scale(lux) + scale(amp) + 
-                   scale(lux)*scale(amp) + offset(log(sop_pip_passes+1)), 
-                 data = emp_data)
-summary(M3fbsp)
-
-
 ### INVESTIGATING COMMUNICATION
 # Use GLM with poisson for social calls
 M1soc <- glm(social_calls ~scale(lux) + scale(amp) + 
@@ -698,14 +757,14 @@ summary(M1soc)
 
 ### check the fit
 # pseudoR2 = 1 - (residual dev / null dev)
-1-(5179.8/5779.6)
+1-(6785.4/7524)
 # 10% of the variance in bat social calls can be explained 
 sum(cooks.distance(M1soc)>1)
 sum(cooks.distance(M1soc)>1)/length(emp_data$social_calls)
-# 16 of 134 are outliers (12%)
+# 15 outliers (8%)
 ## Check for overdispersion Dispersion parameter = resid dev / DF for resid dev 
-5179.8/126
-# The model is highly over-dispersed - 41x higher conditional variance to 
+6785.4/171
+# The model is highly over-dispersed - 39.7x higher conditional variance to 
 # conditional mean. 
 
 
@@ -718,7 +777,7 @@ M2soc <- glm.nb(social_calls ~scale(lux) + scale(amp) +
 summary(M2soc)
 
 ### check the fit
-# pseudoR2 = 1 - (residual dev / null dev) - 10% of the variance in bat social calls can be explained
+# pseudoR2 = 1 - (residual dev / null dev) - 7.6% of the variance in bat social calls can be explained
 1-(205.12/222.03)
 testResiduals(M2soc)
 testDispersion(M2soc)
@@ -731,14 +790,13 @@ sum(cooks.distance(M2soc)>1)
 # no outliers
 
 ## Check for overdispersion: Dispersion parameter = resid dev / DF for resid dev 
-150.6/126
+205.12/171
 # The model is slightly over-dispersed - 1.2x higher conditional variance to 
 # conditional mean. 
 
 
 
-## Try control for feeding
-# investigate relationship between feeding and social calls
+# investigate relationship between feeding and social calls, to use as offset instead
 lm_soc <- lm(social_calls ~ total_bat_fb, data = emp_data)
 summary(lm_soc)
 anova(lm_soc)
@@ -748,13 +806,14 @@ scatter_soc_feeding <- ggplot(data = emp_data,
   geom_point() +
   geom_smooth(method=lm, se=FALSE)
 print(scatter_soc_feeding)
-
+# conclude that no relationship so continue to use bat passes as offset
 
 ######################################################################################
 ######################################################################################
 ################################### plot interaction ##################################   
 ################################Feeding 
-
+require(ggeffects)
+require(ggplot2)
 interaction_fb_1 <- plot(ggpredict(M2fbsp, terms = c("lux", "amp[2.0,3.2,3.9]"), ci = FALSE))+
   theme_classic() +
   xlab("Illuminance (lux)") +
@@ -828,91 +887,11 @@ heatmap_fb
 
 
 
-################ Adapting dataset for long data for by species glmm for total passes
-
-# Create column of bat passes, bat feeding buzzes and bat activity
-bat_data <- read.csv("bat_data.csv", header=TRUE)
-bat_data <- mutate(bat_data, bat_passes = bat_data$com_pip_passes + 
-                     bat_data$sop_pip_passes + bat_data$nat_pip_passes +
-                     bat_data$noid_pip_passes + bat_data$nls_passes +
-                     bat_data$myotis_passes + bat_data$unknown_passes) 
-bat_data <- mutate(bat_data, bat_fb = bat_data$com_pip_fb + bat_data$sop_pip_fb +
-                     bat_data$noid_pip_fb)
-bat_data <- mutate(bat_data, bat_activity = if_else(bat_data$bat_passes==0,0,1))
-
-# sum the passes by species by sample point and date
-sum_data <- bat_data %>% 
-  group_by(Sample_point, Start_date, .add = TRUE) %>%
-  dplyr::select(com_pip_passes, sop_pip_passes, nat_pip_passes, noid_pip_passes, myotis_passes, nls_passes, 
-                unknown_passes) %>% 
-  dplyr::summarize_all(sum)
-sum_data
-sum_data <- as.data.frame(sum_data)
-
-
-# extract number of minutes recorded per night
-# minutes of data
-results <- data.frame(Sample_point=character(), Start_date=character(), mins_rec=numeric())
-results
-for(z in unique(bat_data$Sample_point)){
-  for(i in unique(bat_data$Start_date)) {
-    temp_file <- bat_data %>% subset(bat_data$Start_date==i & bat_data$Sample_point==z)
-    count <- length(unique(temp_file$Time))
-    temp <- data.frame(Start_date=i, mins_rec=count, Sample_point=z)
-    results <- rbind(results, temp)
-  }
-}
-
-sum_data <- merge(sum_data, results, by.x=c('Sample_point', 'Start_date'), 
-                  by.y=c('Sample_point', 'Start_date'))
-
-sum_data_long <- filter(sum_data, mins_rec == 102)
-sum_data_long <- dplyr::select(sum_data_long, -mins_rec)
-require(tidyr)
-sum_data_long <- pivot_longer(sum_data_long, names_to = "Species", values_to = "Passes", cols = 3:9)
-
-# Add in explanatory variables from earlier
-sum_data_long <- merge(sum_data_long, lux_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-sum_data_long <- merge(sum_data_long, landscape_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-sum_data_long <- merge(sum_data_long, tree_density_results, 'Sample_point', 'Sample_point', all.x=TRUE)
-sum_data_long <- merge(sum_data_long, gap_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-# convert to canopy cover
-sum_data_long <- mutate(sum_data_long, canopy_cover = 1-sum_data_long$mean_gap)
-sum_data_long <- merge(sum_data_long, invert_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-sum_data_long <- merge(sum_data_long, site_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-sum_data_long <- merge(sum_data_long, environ_data, by.x=c('Site', 'Start_date'), 
-                       by.y=c('Site', 'Date'))
-sum_data_long <- merge(sum_data_long, sound_data, 'Sample_point', 'Sample_point', all.x=TRUE)
-
-# create factors
-str(sum_data_long)
-sum_data_long$Sample_point <- as.factor(sum_data_long$Sample_point)
-sum_data_long$Site <- as.factor(sum_data_long$Site)
-sum_data_long$Start_date <- as.factor(sum_data_long$Start_date)
-sum_data_long$Species <- as.factor(sum_data_long$Species)
-class(sum_data_long$Species)
-
-require(MASS)
-require(lme4)
-M1glmm <- glmer.nb(Passes~scale(lux) + scale(amp) + 
-                     scale(lux)*scale(amp) +
-                     scale(Distance_from_water_body) + scale(canopy_cover) + scale(Invert_count) + 
-                     scale(Mean_temp_night)+ 
-                     (1|Species), 
-                   data = sum_data_long)
-summary(M1glmm)
-model_performance(M1glmm)
-
-
-testDispersion(M1glmm)
-testQuantiles(M1glmm)
-testUniformity(M1glmm)
-testZeroInflation(M1glmm)
 
 ################################## create table of stat outputs
 require(stargazer)
 stargazer(M1glmm, M2sp, M2cp, M2myot, M2nls, M2fbsp, M2fbcp, M2soc, 
-          dep.var.labels = c("Total bat passes", "Pippyg passes", "Pippip passes", "Myotis passes", "NycEpt passes", "Pippyg feeding", "Pippip feeding", "Social calls"),
+          dep.var.labels = c("Overall passes", "Pippyg passes", "Pippip passes", "Myotis passes", "NycEpt passes", "Pippyg feeding", "Pippip feeding", "Social calls"),
           covariate.labels=c("Illuminance (lux)", "Amplitude","Distance from water", "Canopy Cover", "Invertebrate count", "Temperature", "Lux*Amplitude", "Intercept"),
           keep.stat = "n",
           star.cutoffs = c(0.05, 0.01, 0.001),
@@ -1023,10 +1002,6 @@ soc_plot
 
 
 
-
-#clean up space and set directory
-rm(list=ls())
-list.files()
 
 ## RESPONSE VARIABLE
 
@@ -1651,7 +1626,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 
 # Plot all four with one legend
 multiplot(pie_man, pie_kal, cols=2)
-multiplot(box_lux, box_spl, cols=2)
+multiplot(box_lux, box_spl)
 multiplot(M1glmm_plot, M2cp_plot, M2sp_plot, M2myot_plot, cols=2)
 multiplot(M2nls_plot, M2fbsp_plot, M2fbcp_plot, M2soc_plot, cols=2)
 multiplot(passes_plot, fb_plot, soc_plot)

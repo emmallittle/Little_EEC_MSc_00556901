@@ -1,0 +1,228 @@
+﻿"Metadata below refer to each dataset, alphabetically",
+3HRLY_ENVIRONMENTAL_DATA,
+Date,dd/mm/yyyy; date of record taken from online sources below
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Time,Nearest hour of the record taken from sources below (<5mins from)
+Air_temp,"Temperature in degrees C, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Wind_speed,"Wind speed in knots, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Rainfall_accumulation,"Rainfall accumulation, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Rainfall_last_3hrs,"Rainfall accumulation over previous 3hrs (mm/3hrs), calculated from Rainfall_accumulation data (the change between current and previous recording)"
+,
+3HRLY_ENVIRONMENTAL_DATA_MANIPULATION_STUDY,
+Date,dd/mm/yyyy; refers to the record taken from online sources below
+Start_date,Date of the treatment starting time - treatments started 1.5-2hrs before sunset; dd/mm/yyyy
+day_night,Assigned day or night to each record taken: day was taken as 9am-3pm records and night 6pm to 6am records
+Time,Nearest hour of the record taken from sources below (<5mins from)
+Air_temp,"Temperature in degrees C, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Wind_speed,"Wind speed in knots, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Rainfall_accumulation,"Rainfall accumulation, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Rainfall_last_3hrs,"Rainfall accumulation over previous 3hrs (mm/3hrs), calculated from Rainfall_accumulation data (the change between current and previous recording)"
+,
+BAT_DATA,
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Sample_point,Unique ID for sample point
+Date,Date of the sound file dd/mm/yyyy
+Start_date,Date of the sunset before the sound file was recorded dd/mm/yyyy
+Time,Time of the sound file
+com_pip_passes,Count of Common Pipistrelle (Pipistrellus pipistrellus) passes within the sound file
+com_pip_fb,Count of Common Pipistrelle (Pipistrellus pipistrellus) feeding buzzes within the sound file
+sop_pip_passes,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) passes within the sound file
+sop_pip_fb,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) feeding buzzes within the sound file
+nat_pip_passes,Count of Nathusius Pipistrelle (Pipistrellus nathusii) passes within the sound file
+noid_pip_passes,Count of Pipistrelle passes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+noid_pip_fb,Count of Pipistrelle feeding buzzes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+nls_passes,Count of Nyctalus and Eptesicus species passes within the sound file
+myotis_passes,Count of Myotis species passes within the sound file
+unknown_passes,Count of unidentified bat species passes within the sound file
+social_calls,Count of D-type social calls within the sound file
+,
+BAT_DAT_AUTO_ANALYSIS_RAW,
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Sample_point,Unique ID for sample point
+Date,Date of the sound file dd/mm/yyyy
+Time,Time of the sound file dd/mm/yyyy
+Sonobat_filtered_tolerant,Sonobat automated filtering software filtered out the file as having bats - 1; not having bats - 0
+com_pip_passes,Count of Common Pipistrelle (Pipistrellus pipistrellus) passes within the sound file
+com_pip_fb,Count of Common Pipistrelle (Pipistrellus pipistrellus) feeding buzzes within the sound file
+sop_pip_passes,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) passes within the sound file
+sop_pip_fb,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) feeding buzzes within the sound file
+nat_pip_passes,Count of Nathusius Pipistrelle (Pipistrellus nathusii) passes within the sound file
+noid_pip_passes,Count of Pipistrelle passes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+noid_pip_fb,Count of Pipistrelle feeding buzzes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+nls_passes,Count of Nyctalus and Eptesicus species passes within the sound file
+myotis_passes,Count of Myotis species passes within the sound file
+unknown_passes,Count of unidentified bat species passes within the sound file
+unknown_fb,Count of unidentified bat species feeding buzzes within the sound file
+social_calls,Count of D-type social calls within the sound file
+Comments,Any comments on the bat acoustic analysis
+Pippip,Confidence level given by Kaleidoscope if bat species Pipistrellus pipistrellus present
+Pippyg,Confidence level given by Kaleidoscope if bat species Pipistrellus pygmaeus present
+Myonat,Confidence level given by Kaleidoscope if bat species Myotis nattereri present
+Nycnoc,Confidence level given by Kaleidoscope if bat species Nyctalus noctule present
+Nyclas,Confidence level given by Kaleidoscope if bat species Nyctalus lasiopterus present
+NoID,Confidence level given by Kaleidoscope if bat species not identified
+Nyclei,Confidence level given by Kaleidoscope if bat species Nyctalus leisleri present
+Pleaus,Confidence level given by Kaleidoscope if bat species Plecotus austriacus present
+Pleaur,Confidence level given by Kaleidoscope if bat species Plecotus auritus present
+Eptser,Confidence level given by Kaleidoscope if bat species Eptesicus serotinus present
+Pipnat,Confidence level given by Kaleidoscope if bat species Pipistrellus nathusii present
+Myotis,Confidence level given by Kaleidoscope if Myotis present
+Barbar,Confidence level given by Kaleidoscope if Barbastella barbastellus present
+,
+BAT_ANALYSIS_MANIPULATION_STUDY,
+Number,Chronological number of observation
+Identifier,Person who identified the bats - Emma Little
+Transect,"Transect 1, 2 or 3 from map in Figure 4"
+Point,"Point 1 to 6 representing 0m, 5m, 10m, 20m, 50m and 100m from the site, or control"
+Monitor,Two monitors - a and b - were set at each sample point in case of failures
+Distance_from_treatment,Distance in meters from the treatment site
+Location,Experimental or Control site
+Treatment,"Treatment type at experimental site - light, sound, light and sound, or control"
+Date,Date of sound recording DD/MM/YYYY
+Start_date,Date of sunset before the sound recording DD/MM/YYYY
+Time,Time of sound recording
+com_pip_passes,Count of Common Pipistrelle (Pipistrellus pipistrellus) passes within the sound file
+com_pip_fb,Count of Common Pipistrelle (Pipistrellus pipistrellus) feeding buzzes within the sound file
+sop_pip_passes,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) passes within the sound file
+sop_pip_fb,Count of Soprano Pipistrelle (Pipistrellus pygmaeus) feeding buzzes within the sound file
+nat_pip_passes,Count of Nathusius Pipistrelle (Pipistrellus nathusii) passes within the sound file
+noid_pip_passes,Count of Pipistrelle passes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+noid_pip_fb,Count of Pipistrelle feeding buzzes within the sound file that could not be separated between Common and Soprano Pipistrelle within the sound file
+nls_passes,Count of Nyctalus and Eptesicus species passes within the sound file
+myotis_passes,Count of Myotis species passes within the sound file
+unknown_passes,Count of unidentified bat species passes within the sound file
+unknown_fb,Count of unidentified bat species feeding buzzes within the sound file
+social_calls,Count of D-type social calls within the sound file
+,
+CANOPY_COVER_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Surveyor,Emma Little or Poorvi Ashok
+Sample_point,Unique ID for sample point
+Long,Longitudinal data for sample point in DD format for N; taken using a Garmin eTrex H
+Lat,Latitudinal data for sample point in DD format for W; taken using a Garmin eTrex H
+Accuracy,Accuracy of GPS reading in meters given by the Garmin eTrex H at the time of recording the lat and long data
+Compass_direction_to_understorey_canopy_cover_measurement,"5m to the N, S, E or W of the sample point"
+Para_0_value,Number of pixels that are white in threshold adjusted photo parallel to the compass direction
+Para_255_value,Number of pixels that are white in threshold adjusted photo perpendicular to the compass direction
+Perp_0_value,Number of pixels that are black in threshold adjusted photo parallel to the compass direction
+Perp_255_value,Number of pixels that are black in threshold adjusted photo perpendicular to the compass direction
+,
+DAILY_ENVIRONMENTAL_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Sun_rise,Time of sun rise on date of sample. Source for Barnes: https://www.timeanddate.com/sun/uk/london and for Silwood:  https://www.timeanddate.com/sun/uk/reading
+Sun_set,Time of sun set on date of sample. Source for Barnes: https://www.timeanddate.com/sun/uk/london and for Silwood: https://www.timeanddate.com/sun/uk/reading
+Moon_rise,Time of moon rise on date of sample. Source for Barnes: https://www.timeanddate.com/moon/uk/london and for Silwood:  https://www.timeanddate.com/moon/uk/reading
+Moon_set,Time of moon set on date of sample. Source for Barnes: https://www.timeanddate.com/moon/uk/london and for Silwood:  https://www.timeanddate.com/moon/uk/reading
+Moon_illumination_meridian_passing,Percentage illuminance of moon when passing meridian; Source for Barnes: https://www.timeanddate.com/moon/phases/uk/london and for Silwood:  https://www.timeanddate.com/moon/phases/uk/reading
+Mean_temp_day,"Mean day temperature in degrees C, between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_temp_night,"Mean night temperature in degrees C, between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_wind_speed_day,"Mean day wind speed in knots, between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_wind_speed_night,"Mean night wind speed in knots, between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_rainfall_last_3hrs_day,"Mean day rainfall accumulation over previous 3hrs (mm/3hrs), between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_rainfall_last_3hrs_night,"Mean night rainfall accumulation over previous 3hrs (mm/3hrs), between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+,
+DB_DATA,
+Sample_point,Unique ID for sample point
+Date,Date of sound recording file DD/MM/YYYY
+Time,Time of sound recording file
+Rel_dB,Mean decibels of 0-2khz range of 60 second sound file
+,
+INVERTEBRATE_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Surveyor,Emma Little carried out the survey
+Sample_point,Unique ID for sample point
+Invert_count,Count on invertebrates after 12hrs starting 1-2hrs before sunset and finishing 2-1hrs after sunrise
+,
+LIGHT_MEASUREMENT_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Surveyor,Emma Little or Poorvi Ashok
+Sample_point,Unique ID for sample point
+Tree_ID,"ID of the tree with the Audiomoth, or description if not a tree (eg pole or fence)"
+Long,Longitudinal data for sample point in DD format for N; taken using a Garmin eTrex H
+Lat,Latitudinal data for sample point in DD format for W; taken using a Garmin eTrex H
+Accuracy,Accuracy of GPS reading in meters given by the Garmin eTrex H at the time of recording the lat and long data
+Lux_positioning,Positioning of meter: horizontal - detector facing the sky; vertical - detector facing the nearest light source
+Actual_proxy,"Points with no light source within 40m were not repeated for vertical hold position in Silwood, and horizontal measurement was used as a proxy. Marked as 'actual' otherwise"
+Lux_Night_1,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1,  at 2m height, measurement 1"
+Lux_Night_2,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1,  at 2m height, measurement 2"
+UV_Night_1,"UV measurement in the night using RS PRO mini pocket UV AB meter IM-213 - in milliwatts per square centimetre (mW/cm2),  at 2m height, measurement 1"
+UV_Night_2,"UV measurement in the day using RS PRO mini pocket UV AB meter IM-213 - in milliwatts per square centimetre (mW/cm2),  at 2m height, measurement 2"
+,
+LIGHT_SOUND_MEASUREMENT_DATA,
+Date,Date of observation DD/MM/YYYY
+Surveyor,Emma Little or Poorvi Ashok
+Transect,"Transect 1, 2 or 3 from map in Figure 4"
+Point,"Point 1 to 6 representing 0m, 5m, 10m, 20m, 50m and 100m from the site, or control"
+Distance_from_treatment,Distance in meters from the treatment site
+Location,Experimental or Control site
+Treatment,"Treatment type at experimental site - light, sound, light and sound, or control"
+Lux_horiz1,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1, with the meter held horizontally at 2m height (detector facing the sky), measurement 1"
+Lux_horiz2,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1, with the meter held horizontally  at 2m height (detector facing the sky), measurement 2"
+Lux_vert1,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1, with the meter held vertically  at 2m height (detector facing the nearest light source, if possible), measurement 1"
+Lux_vert2,"Illuminance measurement (lux) in the night using Minolta Illuminance Meter T-1, with the meter held vertically at 2m height (detector facing the nearest light source, if possible), measurement 2"
+spl,"Average sound pressure level (the Equivalent Continuous Sound Pressure Level; dB) over thirty seconds at waist height using the National Institute for Occupational Safety and Health (NIOSH) Sound Level Meter App (EA Lab,  Slovenia)"
+,
+SAMPLE_POINT_DATA_MANIPULATION_STUDY,
+Date,Date of observation DD/MM/YYYY
+Surveyor,Emma Little or Poorvi Ashok
+Sample_point,Unique ID for sample point
+Distance_from_treatment,Distance in meters from the treatment site
+Tree_ID,"ID of the tree with the Audiomoth, or description if not a tree (eg pole or fence)"
+Long,Longitudinal data for sample point in DD format for N; taken using a Garmin eTrex H
+Lat,Latitudinal data for sample point in DD format for W; taken using a Garmin eTrex H
+Accuracy,Accuracy of GPS reading in meters given by the Garmin eTrex H at the time of recording the lat and long data
+,
+SAMPLE_POINT_LANDSCAPE_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Surveyor,Emma Little or Poorvi Ashok
+Sample_point,Unique ID for sample point
+Tree_ID,"ID of the tree with the Audiomoth, or description if not a tree (eg pole or fence)"
+Long,Longitudinal data for sample point in DD format for N; taken using a Garmin eTrex H
+Lat,Latitudinal data for sample point in DD format for W; taken using a Garmin eTrex H
+Accuracy,Accuracy of GPS reading in meters given by the Garmin eTrex H at the time of recording the lat and long data
+Distance_from_water_body,"Distance to nearest water body that is not ephemeral, and larger than 20 square meters (m)"
+Distance_from_building,Distance to nearest in-use building (m)
+Distance_from_woodland,"Distance to nearest woodland, defined as area of unbroken canopy cover > 0.5 hectares in size and wider at all times than one tree (zero if within woodland) (m)"
+Distance_from_woodland_edge,"Distance to nearest edge, defined as clear boundary between woodland and other habitat or land use eg wide road parting the canopy (m)"
+Distance_from_road,"Distance to nearest two-way, non-dead-end road (m)"
+Distance_from_rail,Distance to nearest railway line (m)
+Distance_from_any_artificial_light,Distance to nearets artificial light on consistently at night - including streetlamps (m)
+Distance_from_streetlamp,Distance to nearest streetlamps (m)
+No_streetlamps_within_10m,Number of streetlamps within 10m radius
+No_streetlamps_within_25m,Number of streetlamps within 25m radius
+No_streetlamps_within_50m,Number of streetlamps within 50m radius
+No_streetlamps_within_100m,Number of streetlamps within 100m radius
+,
+TREATMENT_DATA,
+Date,Date of observation DD/MM/YYYY
+Sun_rise,Time of sun rise on date of sample. Source https://www.timeanddate.com/sun/uk/reading
+Sun_set,Time of sun set on date of sample. Source https://www.timeanddate.com/sun/uk/reading
+Moon_rise,Time of moon rise on date of sample. Source https://www.timeanddate.com/moon/uk/reading
+Moon_set,Time of moon set on date of sample. Source https://www.timeanddate.com/moon/uk/reading
+Moon_illumination_meridian_passing,Percentage illuminance of moon when passing meridian; Source https://www.timeanddate.com/moon/phases/uk/reading
+Transect,"Transect 1, 2 or 3 from map in Figure 4"
+Treatment ,"Treatment type at experimental site - light, sound, light and sound, or control"
+Start Time,Start time of treatment if different to 2hrs before sunset
+End Time,End time of treatment if different to 2hrs after sunrise for light or 2hrs before second sunset for sound
+Mean_temp_day (in C),"Mean day temperature in degrees C, between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_temp_night (in C),"Mean night temperature in degrees C, between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_wind_speed_day (in Knots),"Mean day wind speed in knots, between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_wind_speed_night (in Knots),"Mean night wind speed in knots, between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_rainfall_last_3hrs_day (in mm),"Mean day rainfall accumulation over previous 3hrs (mm/3hrs), between 06:00hrs and 21:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+Mean_rainfall_last_3hrs_night (in mm),"Mean night rainfall accumulation over previous 3hrs (mm/3hrs), between 21:00hrs and 06:00hrs, recording taken from time nearest to the hour, every three hours, source for Barnes: Weather station 7 Washington Road, SW13,  https://wow.metoffice.gov.uk/observations/details/20230501semho4xexce65rj4rymrfqirmr and for Silwood: Weather station Sunninghill, https://wow.metoffice.gov.uk/observations/details/?site_id=4c3f2be3-8bf2-e911-b862-0003ff599e2a"
+,
+TREE_DENSITY_DATA,
+Date,Date of observation DD/MM/YYYY
+Site,"Silwood or Barnes refers to Silwood Park, Berkshire, SL5 7PY and Barnes Common, SW13 respectively"
+Surveyor,Emma Little or Poorvi Ashok
+Sample_point,Unique ID for sample point
+Long,Longitudinal data for sample point in DD format for N; taken using a Garmin eTrex H
+Lat,Latitudinal data for sample point in DD format for W; taken using a Garmin eTrex H
+Accuracy,Accuracy of GPS reading in meters given by the Garmin eTrex H at the time of recording the lat and long data
+Quarter point,"NE, SE, SW or NW refer to the compass direction of the quarter for the observation"
+Distance_nearest_tree,"Using point-centred quarter method, distance to the nearest live, standing tree of >=30cm circumference at 130cm height, in cm"
